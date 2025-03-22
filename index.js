@@ -93,12 +93,7 @@ const HANDLERS = {
       }
 
       // Get response based on format
-      let responseContent;
-      if (format === "yaml") {
-        responseContent = await response.text();
-      } else {
-        responseContent = JSON.stringify(await response.json(), null, 2);
-      }
+      let responseContent = await response.text();
 
       return {
         content: [{ type: "text", text: responseContent }],
@@ -122,11 +117,7 @@ const HANDLERS = {
   },
 
   getApiOperation: async (request) => {
-    const {
-      id,
-      operationIdOrRoute,
-      format = "json",
-    } = request.params.arguments;
+    const { id, operationIdOrRoute } = request.params.arguments;
     const formattedId = formatApiId(id);
 
     log(
@@ -137,30 +128,20 @@ const HANDLERS = {
     );
 
     // Set content type based on format
-    const acceptHeader = format === "yaml" ? "text/yaml" : "application/json";
-    const headers = { Accept: acceptHeader };
 
     try {
       // Fetch from oapis.org/summary endpoint
       const url = `https://oapis.org/summary/${formattedId}/${operationIdOrRoute}`;
       log("SLOP API request URL:", url);
 
-      const response = await fetch(url, { headers });
+      const response = await fetch(url);
       if (!response.ok) {
         const error = await response.text();
         throw new Error(`SLOP API error: ${error}`);
       }
 
-      // Get response based on format
-      let responseContent;
-      if (format === "yaml") {
-        responseContent = await response.text();
-      } else {
-        responseContent = JSON.stringify(await response.json(), null, 2);
-      }
-
       return {
-        content: [{ type: "text", text: responseContent }],
+        content: [{ type: "text", text: await response.text() }],
         metadata: {},
       };
     } catch (error) {
