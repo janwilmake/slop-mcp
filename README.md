@@ -2,6 +2,9 @@
 
 A Model Context Protocol (MCP) server for Claude that enables searching and exploring OpenAPI specifications through oapis.org.
 
+> [!IMPORTANT]
+> SLOP MCP is a Work In Progress. Expect bugs. Open To Contributers, [DM](https://x.com/janwilmake)
+
 ## Features
 
 - Get an overview of any OpenAPI specification
