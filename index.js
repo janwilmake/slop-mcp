@@ -186,7 +186,7 @@ export async function init() {
   );
 
   const nodePath = await findNodePath();
-  const cloudflareConfig = {
+  const config = {
     command: nodePath,
     args: [__filename, "run"],
   };
@@ -217,7 +217,7 @@ export async function init() {
       ...existingConfig,
       mcpServers: {
         ...existingConfig.mcpServers,
-        slop: cloudflareConfig,
+        slop: config,
       },
     };
 
@@ -238,8 +238,8 @@ export async function init() {
     const fullConfig = { mcpServers: { slop: cloudflareConfig } };
     console.log(
       `Couldn't detect Claude Desktop config at ${claudeConfigPath}.\nTo add the SLOP MCP server manually, add the following config to your ${chalk.yellow(
-        "claude_desktop_configs.json",
-      )} file:\n\n${JSON.stringify(fullConfig, null, 2)}`,
+        "MCP config-file",
+      )}:\n\n${JSON.stringify(fullConfig, null, 2)}`,
     );
   }
 }
