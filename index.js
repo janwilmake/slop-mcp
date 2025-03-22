@@ -69,60 +69,6 @@ function formatApiId(id) {
   return id;
 }
 
-// Define the tool schemas
-const GET_API_OVERVIEW_TOOL = {
-  name: "getApiOverview",
-  description:
-    "Get an overview of an OpenAPI specification. This should be the first step when working with any API.",
-  inputSchema: {
-    type: "object",
-    properties: {
-      id: {
-        type: "string",
-        description:
-          "API identifier, can be a known ID from openapisearch.com or a URL (without protocol) with slashes replaced by '__'",
-      },
-      format: {
-        type: "string",
-        description: "Response format (json or yaml)",
-        enum: ["json", "yaml"],
-        default: "json",
-      },
-    },
-    required: ["id"],
-  },
-};
-
-const GET_API_OPERATION_TOOL = {
-  name: "getApiOperation",
-  description:
-    "Get details about a specific operation from an OpenAPI specification. Use this after getting an overview.",
-  inputSchema: {
-    type: "object",
-    properties: {
-      id: {
-        type: "string",
-        description:
-          "API identifier, can be a known ID from openapisearch.com or a URL (without protocol) with slashes replaced by '__'",
-      },
-      operationIdOrRoute: {
-        type: "string",
-        description: "Operation ID or route path to retrieve",
-      },
-      format: {
-        type: "string",
-        description: "Response format (json or yaml)",
-        enum: ["json", "yaml"],
-        default: "json",
-      },
-    },
-    required: ["id", "operationIdOrRoute"],
-  },
-};
-
-// All tools
-const ALL_TOOLS = [GET_API_OVERVIEW_TOOL, GET_API_OPERATION_TOOL];
-
 // Tool handlers
 const HANDLERS = {
   getApiOverview: async (request) => {
@@ -330,7 +276,61 @@ async function main() {
     // Handle list tools request
     server.setRequestHandler(ListToolsRequestSchema, async () => {
       log("Received list tools request");
-      return { tools: ALL_TOOLS };
+
+      const openpaiIds = await fetch("https://openapisearch.com/").then((res) =>
+        res.text(),
+      );
+
+      // Define the tool schemas
+      const GET_API_OVERVIEW_TOOL = {
+        name: "getApiOverview",
+        description: `Get an overview of an OpenAPI specification. This should be the first step when working with any API.\n\n${openpaiIds}`,
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: {
+              type: "string",
+              description:
+                "API identifier, can be a known ID from openapisearch.com or a URL (without protocol) with slashes replaced by '__'",
+            },
+            format: {
+              type: "string",
+              description: "Response format (json or yaml)",
+              enum: ["json", "yaml"],
+              default: "json",
+            },
+          },
+          required: ["id"],
+        },
+      };
+
+      const GET_API_OPERATION_TOOL = {
+        name: "getApiOperation",
+        description: `Get details about a specific operation from an OpenAPI specification. Use this after getting an overview.\n\n${openpaiIds}`,
+        inputSchema: {
+          type: "object",
+          properties: {
+            id: {
+              type: "string",
+              description:
+                "API identifier, can be a known ID from openapisearch.com or a URL (without protocol) with slashes replaced by '__'",
+            },
+            operationIdOrRoute: {
+              type: "string",
+              description: "Operation ID or route path to retrieve",
+            },
+            format: {
+              type: "string",
+              description: "Response format (json or yaml)",
+              enum: ["json", "yaml"],
+              default: "json",
+            },
+          },
+          required: ["id", "operationIdOrRoute"],
+        },
+      };
+
+      return { tools: [GET_API_OVERVIEW_TOOL, GET_API_OPERATION_TOOL] };
     });
 
     // Handle tool calls

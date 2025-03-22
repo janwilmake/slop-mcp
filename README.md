@@ -12,11 +12,7 @@ A Model Context Protocol (MCP) server for Claude that enables searching and expl
 ## Installation
 
 ```bash
-# Install globally
-npm install -g slop-mcp
-
-# Initialize and configure with Claude Desktop
-slop-mcp init
+npx slop-mcp init
 ```
 
 ## Usage in Claude
